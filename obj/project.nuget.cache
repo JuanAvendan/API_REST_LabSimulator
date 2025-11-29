@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Agg2WZTzxO4=",
+  "dgSpecHash": "NYGd3pxFl8I=",
   "success": true,
-  "projectFilePath": "C:\\Users\\juane\\Documents\\GitHub\\LabSimulatorAPI\\LabSimulatorAPI.csproj",
+  "projectFilePath": "C:\\Users\\juane\\Documents\\GitHub\\API_REST_LabSimulator\\LabSimulatorAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\juane\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\juane\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
