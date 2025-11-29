@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "jmSDZKKf5o4fOiynE3iXlVP9T9lZEYMqqqUk9RJ7FGA=",
+  "Source": "LabSimulatorAPI",
+  "BasePath": "_content/LabSimulatorAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
