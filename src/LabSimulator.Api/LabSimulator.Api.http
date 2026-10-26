@@ -1,0 +1,65 @@
+### Requests for the VS / Rider / VS Code REST client.
+### Get an access token by signing in through Supabase Auth (see docs/blueprint-migration.md)
+### and paste it below. Never commit a real token.
+
+@baseUrl = https://localhost:7069
+@token = <supabase-access-token>
+@matchId = 00000000-0000-0000-0000-000000000000
+
+GET {{baseUrl}}/health/ready
+
+###
+PUT {{baseUrl}}/api/v1/me
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "displayName": "Ana Gómez" }
+
+###
+GET {{baseUrl}}/api/v1/scenarios/infusion-pump
+Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}/api/v1/matches
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "roomName": "UCI - Grupo 1" }
+
+###
+POST {{baseUrl}}/api/v1/matches/{{matchId}}/participants
+Authorization: Bearer {{token}}
+
+###
+POST {{baseUrl}}/api/v1/attempts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "scenarioCode": "infusion-pump",
+  "matchId": "{{matchId}}",
+  "selectedMedication": "Dopamina",
+  "selectedPathology": "Shock cardiogénico",
+  "remainingSeconds": 125,
+  "steps": [
+    { "stepCode": "correct-area", "earnedPoints": 100 },
+    { "stepCode": "dirty-pump", "earnedPoints": 100 },
+    { "stepCode": "damaged-power-cable", "earnedPoints": 50 },
+    { "stepCode": "power-cable-disconnected", "earnedPoints": 100 },
+    { "stepCode": "power-source-disconnected", "earnedPoints": 100 },
+    { "stepCode": "maintenance-sticker", "earnedPoints": 0 },
+    { "stepCode": "infusion-set-installed", "earnedPoints": 100 },
+    { "stepCode": "purge", "earnedPoints": 100 },
+    { "stepCode": "patient-document", "earnedPoints": 100 },
+    { "stepCode": "correct-medication", "earnedPoints": 100 },
+    { "stepCode": "line-configuration", "earnedPoints": 75 }
+  ]
+}
+
+###
+POST {{baseUrl}}/api/v1/matches/{{matchId}}/end
+Authorization: Bearer {{token}}
+
+###
+GET {{baseUrl}}/api/v1/me/attempts?page=1&pageSize=20
+Authorization: Bearer {{token}}
