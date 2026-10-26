@@ -16,6 +16,7 @@ En **Connect** (arriba en el dashboard) copia la del **Session pooler**. Funcion
 Host=aws-<n>-<region>.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.<project-ref>;Password=<password>;SSL Mode=Require
 ```
 
+- Esta cadena, con el usuario `postgres`, sirve para aplicar el esquema. La API usa el usuario restringido del [paso 4](#4-usuario-de-base-de-datos-para-la-api).
 - No uses el *Transaction pooler* (puerto 6543) para esta API: es para funciones serverless.
 - Guárdala con user-secrets en local o como secret en Azure. **Nunca** en `appsettings.json`.
 
@@ -45,7 +46,42 @@ Resultado: esquema `labsim` con `profiles`, `matches`, `match_participants`, `sc
 
 > **Por qué un esquema propio:** la Data API de Supabase (PostgREST) solo expone `public`. Al vivir en `labsim`, las tablas no son accesibles con la publishable key; el único acceso es a través de la API.
 
-## 4. Primer administrador
+## 4. Usuario de base de datos para la API
+
+El script no concede permisos a nadie: las tablas quedan a nombre de `postgres`, que es quien ejecuta el SQL Editor. Ni `anon` ni `authenticated` pueden leerlas, lo cual es correcto, porque el simulador accede a los datos solo a través de la API.
+
+La API **no** debe conectarse como `postgres`, que puede alterar o borrar cualquier esquema. Crea un rol que solo lea y escriba datos en `labsim`. Ejecuta esto en el SQL Editor, después de crear el esquema:
+
+```sql
+-- Sustituye la contraseña por una larga y aleatoria generada en tu gestor de contraseñas.
+create role labsim_api with login password '<contraseña-generada>';
+
+grant usage on schema labsim to labsim_api;
+grant select, insert, update, delete on all tables in schema labsim to labsim_api;
+
+-- Las tablas de migraciones futuras (creadas por postgres) heredan los mismos permisos.
+alter default privileges for role postgres in schema labsim
+  grant select, insert, update, delete on tables to labsim_api;
+
+-- Defensa en profundidad: nadie más entra al esquema.
+revoke all on schema labsim from public, anon, authenticated;
+revoke all on all tables in schema labsim from anon, authenticated;
+```
+
+Con este rol, la cadena de conexión de la API usa **`labsim_api.<project-ref>`** como usuario. El pooler compartido identifica el proyecto por ese sufijo.
+
+```
+Host=aws-<n>-<region>.pooler.supabase.com;Port=5432;Database=postgres;Username=labsim_api.<project-ref>;Password=<contraseña-generada>;SSL Mode=Require
+```
+
+| Tarea | Usuario |
+| --- | --- |
+| Aplicar migraciones (SQL Editor o `dotnet ef database update`) | `postgres` |
+| API en local y en Azure | `labsim_api` |
+
+`labsim_api` no puede crear ni modificar tablas. Si una versión nueva trae una migración, aplícala primero como `postgres` (paso 3) y luego despliega la API.
+
+## 5. Primer administrador
 
 1. Regístrate desde el simulador, o en **Authentication → Users → Add user**.
 2. Llama a `PUT /api/v1/me` con ese usuario para crear su perfil.

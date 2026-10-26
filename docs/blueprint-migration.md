@@ -47,7 +47,7 @@ PUT <API>/api/v1/me
 → 201 la primera vez, 200 después
 ```
 
-**El cliente ya no envía el rol.** Todo usuario nuevo es `Student`, y un admin asigna `Teacher` (ver [supabase.md](supabase.md#4-primer-administrador)).
+**El cliente ya no envía el rol.** Todo usuario nuevo es `Student`, y un admin asigna `Teacher` (ver [supabase.md](supabase.md#5-primer-administrador)).
 
 **Renovar el token:** si una llamada devuelve `401`, renueva y repite la llamada.
 
