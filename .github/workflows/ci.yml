@@ -31,8 +31,11 @@ jobs:
       - name: Fail if the model changed without a migration
         run: dotnet ef migrations has-pending-model-changes --project src/LabSimulator.Api --no-build --configuration Release
 
+      # dotnet ef writes a UTF-8 BOM that PostgreSQL rejects ("syntax error at or near DO").
       - name: Generate idempotent SQL script
-        run: dotnet ef migrations script --idempotent --project src/LabSimulator.Api --no-build --configuration Release --output artifacts/schema.sql
+        run: |
+          dotnet ef migrations script --idempotent --project src/LabSimulator.Api --no-build --configuration Release --output artifacts/schema.sql
+          sed -i '1s/^\xEF\xBB\xBF//' artifacts/schema.sql
 
       - uses: actions/upload-artifact@v7
         with:

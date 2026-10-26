@@ -37,10 +37,13 @@ dotnet ef database update -p src/LabSimulator.Api --connection "<cadena de conex
 **B. Desde el SQL Editor de Supabase**: genera el script y pégalo. Es idempotente, así que puedes ejecutarlo varias veces.
 
 ```bash
-dotnet ef migrations script --idempotent -p src/LabSimulator.Api -o schema.sql
+dotnet ef migrations script --idempotent -p src/LabSimulator.Api -o artifacts/schema.sql
+sed -i '1s/^\xEF\xBB\xBF//' artifacts/schema.sql   # quita el BOM UTF-8 (Git Bash)
 ```
 
-La CI también publica ese `schema.sql` como artefacto en cada build.
+> `dotnet ef` guarda el archivo con un BOM invisible al inicio, y Postgres responde `syntax error at or near "DO"`. El `sed` lo elimina. Desde PowerShell 5, en cambio, `Set-Content -Encoding utf8` vuelve a escribir el BOM.
+
+La CI también publica ese `schema.sql`, ya sin BOM, como artefacto en cada build.
 
 Resultado: esquema `labsim` con `profiles`, `matches`, `match_participants`, `scenarios`, `scenario_steps` (rúbrica sembrada), `scenario_attempts` y `attempt_step_results`.
 
